@@ -1,9 +1,13 @@
 import { Module } from '@nestjs/common';
-import { VendasService } from './vendas.service';
-import { VendasController } from './vendas.controller';
+import { VendasController } from './controllers/vendas.controller';
+import { VendasService } from './services/vendas.service';
+import { VENDA_REPOSITORY } from '../../domain/contracts/venda.repository.interface';
+import { PrismaVendaRepository } from '../../infra/repositories/prisma-venda.repository';
+import { ProdutosModule } from '../produtos/produtos.module';
 
 @Module({
-  controllers: [VendasController],
-  providers: [VendasService],
+ imports:[ProdutosModule],
+ controllers:[VendasController],
+ providers:[VendasService,{ provide: VENDA_REPOSITORY, useClass: PrismaVendaRepository }],
 })
 export class VendasModule {}
