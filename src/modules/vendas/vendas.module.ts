@@ -6,8 +6,14 @@ import { PrismaVendaRepository } from '../../infra/repositories/prisma-venda.rep
 import { ProdutosModule } from '../produtos/produtos.module';
 
 @Module({
- imports:[ProdutosModule],
- controllers:[VendasController],
- providers:[VendasService,{ provide: VENDA_REPOSITORY, useClass: PrismaVendaRepository }],
+  imports: [ProdutosModule],
+  controllers: [VendasController],
+  providers: [
+    VendasService,
+    {
+      provide: VENDA_REPOSITORY,
+      useClass: PrismaVendaRepository,
+    },
+  ],
 })
 export class VendasModule {}

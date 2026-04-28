@@ -5,13 +5,21 @@ import { ProdutosService } from '../services/produtos.service';
 describe('ProdutosController', () => {
   let controller: ProdutosController;
 
+  const mockService = {
+    create: jest.fn(),
+    findAll: jest.fn(),
+    findOne: jest.fn(),
+    update: jest.fn(),
+    remove: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ProdutosController],
       providers: [
         {
           provide: ProdutosService,
-          useValue: {},
+          useValue: mockService,
         },
       ],
     }).compile();
@@ -19,7 +27,22 @@ describe('ProdutosController', () => {
     controller = module.get<ProdutosController>(ProdutosController);
   });
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
+  it('should create a product', async () => {
+    const dto = {
+      nome: 'Notebook',
+      descricao: 'Gamer',
+      preco: 3500,
+      estoque: 5,
+    };
+
+    mockService.create.mockResolvedValue({
+      id: '1',
+      ...dto,
+    });
+
+    const result = await controller.create(dto);
+
+    expect(mockService.create).toHaveBeenCalledWith(dto);
+    expect(result.nome).toBe('Notebook');
   });
 });

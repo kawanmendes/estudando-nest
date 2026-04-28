@@ -1,11 +1,44 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { VendaRepositoryInterface } from '../../domain/contracts/venda.repository.interface';
+import type { Venda } from '../../domain/entities/venda';
 
 @Injectable()
 export class PrismaVendaRepository implements VendaRepositoryInterface {
   constructor(private readonly prisma: PrismaService) {}
-  create(data) { return this.prisma.venda.create({ data }).then(v => ({ ...v, valorTotal: Number(v.valorTotal) })); }
-  findAll() { return this.prisma.venda.findMany().then(items => items.map(v => ({ ...v, valorTotal: Number(v.valorTotal) }))); }
-  findById(id: string) { return this.prisma.venda.findUnique({ where: { id } }).then(v => v && ({ ...v, valorTotal: Number(v.valorTotal) })); }
+
+  async create(data: Omit<Venda, 'id'>): Promise<Venda> {
+    const venda = await this.prisma.venda.create({
+      data,
+    });
+
+    return {
+      ...venda,
+      valorTotal: Number(venda.valorTotal),
+    };
+  }
+
+  async findAll(): Promise<Venda[]> {
+    const vendas = await this.prisma.venda.findMany();
+
+    return vendas.map((venda) => ({
+      ...venda,
+      valorTotal: Number(venda.valorTotal),
+    }));
+  }
+
+  async findById(id: string): Promise<Venda | null> {
+    const venda = await this.prisma.venda.findUnique({
+      where: { id },
+    });
+
+    if (!venda) {
+      return null;
+    }
+
+    return {
+      ...venda,
+      valorTotal: Number(venda.valorTotal),
+    };
+  }
 }
